@@ -70,7 +70,14 @@ export function App() {
 
     };
 
-    /* Agregamos otra propiedad, toggleTodo, al arreglo todos */
+    /* 
+        - Agregamos otra propiedad, toggleTodo, al arreglo todos.
+        - Después de los botones agregamos un div para mostrar
+            el contador de tareas que faltan por completarse.
+            - Se usa un filtro para el arreglo todo
+                donde busca qué elementos tienen un estado
+                completed = false y los cuenta (len).
+    */
     return (
         <Fragment>
             <TodoList todos={todos} toggleTodo={toggleTodo} />

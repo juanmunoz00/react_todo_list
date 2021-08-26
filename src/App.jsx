@@ -14,13 +14,17 @@
             a través de la función setTodos.
         - Instalar una libreria llamada uuid que genera IDs unicos.
         - Importar el método v4 de la libreria uuid y nombrarla uuidv4.
-
-    - 
+    - Se crea la función handleClearAll para eliminar de la lista 
+        las tareas marcadas como terminadas (completed = true).
+    - Se agrega un hook (use effect) para manejo de local storage.
 
 */ 
-import React, { Fragment, useState, useRef } from "react";
+import React, { Fragment, useState, useRef, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { TodoList } from "./components/TodoList";
+
+/* Llave a usarse en el local storage */
+const KEY = "todoApp.todos";
 
 export function App() { 
     /* 
@@ -34,6 +38,26 @@ export function App() {
     ]);
 
     const todoTaskRef = useRef();
+
+    /* 
+        Este useEffect se ejecuta cuándo se recarga la página.
+        Almacena el arreglo todos "parseando" lo que está en local storage con la llave KEY.
+            "seteando" el estado.
+    */
+    useEffect(() => {
+        const storedTodos = JSON.parse(localStorage.getItem(KEY));
+        if (storedTodos) {
+            setTodos(storedTodos);
+        }
+    }, []);
+
+    /*
+        Este useEffect se ejecuta cuándo se actualiza el estado del arreglo todos.
+        Almacena el arreglo en local storage.
+    */
+    useEffect(() => {
+        localStorage.setItem(KEY, JSON.stringify(todos));
+    }, [todos]);
 
     /*
         - Recibe el id del elemento.
@@ -71,6 +95,16 @@ export function App() {
     };
 
     /* 
+        - Creamos una copia del arreglo todos.
+        - Filtramos los elementos con la propiedad completed = false
+        - Actualizamos el estado del arreglo todos.
+    */
+    const handleClearAll = () => {
+        const newTodos = todos.filter((todo) => !todo.completed);
+        setTodos(newTodos);
+    };
+
+    /* 
         - Agregamos otra propiedad, toggleTodo, al arreglo todos.
         - Después de los botones agregamos un div para mostrar
             el contador de tareas que faltan por completarse.
@@ -83,7 +117,7 @@ export function App() {
             <TodoList todos={todos} toggleTodo={toggleTodo} />
             <input ref={todoTaskRef} type="text" placeholder="Nueva Tarea"></input>
             <button onClick={handleTodoAdd}>➕</button>
-            <button>🗑</button>
+            <button onClick={handleClearAll} >🗑</button>
             <div>Te quedan {todos.filter((todo) => !todo.completed).length} tareas por terminar</div>
 
         </Fragment>
